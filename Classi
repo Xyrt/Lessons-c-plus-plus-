@@ -1,0 +1,352 @@
+// Header
+#pragma once
+
+class Distance
+{
+public:
+	Distance();
+	Distance(int feet, float inches);
+	Distance(int feet);
+
+	int GetFeet() const;
+	float GetInches() const;
+	void SetData(int feet, float inches);
+	void Read();
+	void Print();
+
+	Distance operator+(Distance const& rhs);
+	void operator+=(Distance const& rhs);
+	Distance operator-(Distance const& rhs);
+	void operator-=(Distance const& rhs);
+	Distance& operator++();
+	Distance operator++(int);
+
+private:
+	int m_feet = 0;
+	float m_inches = 0;
+};
+
+float operator/(Distance const& lhs, Distance const& rhs);
+
+//cpp
+
+#include "Distance.h"
+
+#include <iostream>
+
+Distance::Distance()
+{
+	m_feet = 0;
+	m_inches = 0;
+}
+
+Distance::Distance(int feet, float inches)
+{
+	m_feet = feet;
+	m_inches = inches;
+	// SetData(feet, inches);
+}
+
+Distance::Distance(int feet)
+{
+	m_feet = feet;
+	m_inches = 0;
+}
+
+int Distance::GetFeet() const
+{
+	return m_feet;
+}
+
+float Distance::GetInches() const
+{
+	return m_inches;
+}
+
+void Distance::SetData(int feet, float inches)
+{
+	m_feet = feet;
+	m_inches = inches;
+}
+
+void Distance::Read()
+{
+	std::cin >> m_feet >> m_inches;
+}
+
+void Distance::Print()
+{
+	std::cout << m_feet << "\'" << m_inches << "\"" << std::endl;
+}
+
+Distance Distance::operator+(Distance const& rhs)
+{
+	Distance result(*this);
+	result += rhs;
+	return result;
+}
+
+void Distance::operator+=(Distance const& rhs)
+{
+	m_feet += rhs.m_feet;
+	m_inches += rhs.m_inches;
+	if (m_inches >= 12.0f)
+	{
+		m_inches -= 12.0f;
+		m_feet += 1;
+	}
+}
+
+Distance Distance::operator-(Distance const& rhs)
+{
+	Distance result(*this);
+	result -= rhs;
+	return result;
+}
+
+void Distance::operator-=(Distance const& rhs)
+{
+	m_feet -= rhs.m_feet;
+	m_inches -= rhs.m_inches;
+	if (m_inches < 0)
+	{
+		m_inches += 12.0f;
+		m_feet -= 1;
+	}
+}
+
+Distance& Distance::operator++()
+{
+	m_feet++;
+	return *this;
+}
+
+Distance Distance::operator++(int)
+{
+	Distance result(*this);
+	m_feet++;
+	return result;
+}
+
+float operator/(Distance const& lhs, Distance const& rhs)
+{
+	float inches1 = lhs.GetFeet()*12.0f + lhs.GetFeet();
+	float inches2 = rhs.GetFeet()*12.0f + rhs.GetFeet();
+	return inches1 / inches2;
+}
+
+
+
+
+
+
+
+//Header
+
+#pragma once
+
+class Group
+{
+};
+
+class Student
+{
+private:
+	char* m_name = 0;
+	int m_rating;
+	Group& m_group;
+
+	static int g_count;
+
+public:
+	Student(Group& group);
+	Student(Group& group, char const* name, int rating);
+	// copy constructor
+	Student(Student const& student);
+
+	~Student();
+
+	char const* GetName() const;
+	int GetRating() const;
+
+	void SetName(char const* name);
+	void SetRating(int rating);
+
+	void Read();
+	void Print() const;
+
+	Student& operator=(Student& student);
+
+	static void IncreaseCounter();
+	static void DecreaseCounter();
+	static int GetStudentCount();
+};
+
+
+
+//cpp
+
+#include "Student.h"
+
+#include <cstring>
+#include <iostream>
+
+int Student::g_count = 0;
+
+void Student::IncreaseCounter()
+{
+	++g_count;
+}
+void Student::DecreaseCounter()
+{
+	--g_count;
+}
+
+int Student::GetStudentCount()
+{
+	return g_count;
+}
+
+Student::Student(Group& group) :
+	m_group(group),
+	m_rating(0)
+{
+	IncreaseCounter();
+	m_name = new char[1];
+	m_name[0] = '\0';
+}
+
+Student::Student(Group& group, char const* name, int rating) :
+	m_name(NULL),
+	m_group(group),
+	m_rating(rating)
+{
+	IncreaseCounter();
+	SetName(name);
+}
+
+Student::Student(Student const& student) :
+	m_group(student.m_group),
+	m_rating(student.m_rating)
+{
+	IncreaseCounter();
+	std::cout << "Copy\n";
+	SetName(student.GetName());
+}
+
+Student::~Student()
+{
+	DecreaseCounter();
+	delete[] m_name;
+}
+
+char const* Student::GetName() const
+{
+	return m_name;
+}
+
+int Student::GetRating() const
+{
+	return m_rating;
+}
+
+void Student::SetName(char const* name)
+{
+	delete[] m_name;
+	size_t length = strlen(name);
+	m_name = new char[length + 1];
+	strcpy(m_name, name);
+}
+
+void Student::SetRating(int rating)
+{
+	m_rating = rating;
+}
+
+void Student::Read()
+{
+	std::cout << "Enter name: ";
+	char buffer[21];
+	std::cin.getline(buffer, 20);
+	SetName(buffer);
+	std::cout << "Enter rating: ";
+	std::cin >> m_rating;
+}
+
+void Student::Print() const
+{
+	std::cout << m_name << ": " << m_rating << "\n";
+}
+
+Student& Student::operator=(Student& student)
+{
+	if (this == &student)
+	{
+		return *this;
+	}
+	IncreaseCounter();
+	this->SetName(student.GetName());
+	this->m_rating = student.GetRating();
+	return *this;
+}
+
+
+
+//main 
+
+#include "student.h"
+#include "Distance.h"
+#include <iostream>
+
+void PrintMaxRaiting(Student s1, Student s2)
+{
+	std::cout << (s1.GetRating() < s2.GetRating() ? s2.GetRating() : s1.GetRating()) << "\n";
+}
+
+Student Create(Group& g, char const* name)
+{
+	/*int count;
+	std::cin >> count;
+	Student** students = new Student*[count];
+	for (int i = 0; i < count; ++i)
+	{
+	Student* st = new Student(g);
+	students[i] = st;
+	}*/
+
+	Student s(g, name, 0);
+	return s;
+}
+
+void main()
+{
+	//Group g;
+	//Student s1(g, "Ivanov", 6);
+	//Student s2 = s1;
+	//Student s3(s1);
+
+	//std::cout << "count = " << Student::GetStudentCount() << "\n";
+
+	//s2.SetName("Petrov");
+	//s2.SetRating(5);
+	//s1.Print();
+	//s2.Print();
+
+	//PrintMaxRaiting(s1, s2);
+	//Student* s5;
+	//{
+	//	s5 = new Student(g);
+	//	Student s4 = Create(g, "Sidorov");
+	//	s4.Print();
+	//	std::cout << "count = " << Student::GetStudentCount() << "\n";
+	//}
+	//std::cout << "count = " << Student::GetStudentCount() << "\n";
+	//delete s5;
+	//std::cout << "count = " << Student::GetStudentCount() << "\n";
+
+	Distance d1(5, 6);
+	Distance d2(4, 3);
+	Distance d3 = d1 + d2;
+	d3.Print();
+
+}
