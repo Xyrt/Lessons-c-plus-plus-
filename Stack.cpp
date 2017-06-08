@@ -1,28 +1,39 @@
 #include "Stack.h"
-#include <cstring>
+
 #include <iostream>
 
-Stack::Stack(int element) : m_capacity(0), m_count(0), m_elements(0)
+void Stack::ReallocateMemory(int newCapacity)
+{
+	m_capacity = newCapacity;
+	int* newMwmory = new int[m_capacity];
+	memcpy(newMwmory, m_elements, m_capacity);
+	delete[] m_elements;
+	m_elements = newMwmory;
+}
+
+Stack::Stack() :
+	m_capacity(10),
+	m_count(0)
 {
 	m_elements = new int[10];
 }
 
-
-void Stack::ExpandMemory()
+Stack::Stack(Stack const& stack)
 {
-	m_capacity *= 2;
-	int* newMemory = new int[m_capacity];
-	memcpy(newMemory, m_elements, m_count);
-	delete[] m_elements;
-	m_elements = newMemory;
+	m_capacity = stack.m_capacity;
+	m_count = stack.m_count;
+	m_elements = new int[m_capacity];
+	memcpy(m_elements, stack.m_elements, m_capacity);
 }
 
-Stack::Stack(const Stack& stack)
+Stack::Stack(Stack&& stack)
 {
-	m_count = stack.m_count;
 	m_capacity = stack.m_capacity;
-	m_elements = new int[m_capacity];
-	memcpy(m_elements, stack.m_elements, sizeof(int)*m_count);
+	m_count = stack.m_count;
+	m_elements = stack.m_elements;
+	stack.m_elements = nullptr;
+	stack.m_capacity = 0;
+	stack.m_count = 0;
 }
 
 Stack::~Stack()
@@ -30,16 +41,67 @@ Stack::~Stack()
 	delete[] m_elements;
 }
 
-Stack& Stack::operator=(Stack& element)
+void Stack::Push(int element)
 {
-	delete[] m_elements;
-	m_capacity = element.m_capacity;
-
-	m_elements = new int[m_capacity];
-	for (int i = 0; i < m_capacity; i++)
+	if (m_count == m_capacity)
 	{
-		m_elements[i] = element.m_elements[i];
+		ReallocateMemory(m_capacity * 2);
 	}
+	m_elements[m_count] = element;
+	m_count++;
+}
+
+int Stack::Pop()
+{
+	m_count--;
+	if (m_count * 4 <= m_capacity && m_count >= 10)
+	{
+		ReallocateMemory(m_capacity / 2);
+	}
+	return m_elements[m_count];
+}
+
+size_t Stack::GetQuantity()
+{
+	return m_count;
+}
+
+int Stack::Top()
+{
+	return m_elements[m_count - 1];
+}
+
+void  Stack::Clear()
+{
+	m_count = 0;
+}
+
+Stack& Stack::operator=(Stack const& stack)
+{
+	if (this != &stack)
+	{
+		m_capacity = stack.m_capacity;
+		m_count = stack.m_count;
+		delete[] m_elements;
+		m_elements = new int[m_capacity];
+		memcpy(m_elements, stack.m_elements, m_capacity);
+	}
+	return *this;
+}
+
+Stack& Stack::operator=(Stack&& stack)
+{
+	if (this != &stack)
+	{
+		m_capacity = stack.m_capacity;
+		m_count = stack.m_count;
+		delete[] m_elements;
+		m_elements = stack.m_elements;
+		stack.m_elements = nullptr;
+		stack.m_capacity = 0;
+		stack.m_count = 0;
+	}
+	return *this;
 }
 
 Stack& Stack::operator<<(int element)
@@ -48,34 +110,11 @@ Stack& Stack::operator<<(int element)
 	return *this;
 }
 
-Stack& Stack::operator>>(int element)
+Stack& Stack::operator >> (int& element)
 {
-	Pop();
-	return *this;
-}
-
-void Stack::Push(int element)
-{
-	if (m_count == m_capacity)
+	if (m_count != 0)
 	{
-		ExpandMemory();
+		element = Pop();
 	}
-	element = m_elements[m_count - 1];
-	m_count++;
-}
-
-int Stack::Pop()
-{
-	m_count--;
-	return m_elements[m_count];
-}
-
-int Stack::Top()
-{
-
-}
-
-void Stack::Clear()
-{
-
+	return *this;
 }
