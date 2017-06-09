@@ -1,0 +1,18 @@
+#include <iostream>
+#include "Complex.h"
+
+int main()
+{
+	Complex<float> c1(2.4, 3.1);
+	Complex<double> c2(c1);
+	Complex<double> c3 = c1 + c2;
+	Complex<float> c4 = c3 * c1;
+
+	std::cout << c4 << std::endl;
+
+	c1 = c3;
+
+	std::cout << c1 << std::endl;
+
+	return 0;
+}
