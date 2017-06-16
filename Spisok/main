@@ -1,0 +1,45 @@
+#include "Spisok.h"
+#include <iostream>
+#include <list>
+#include <algorithm>
+
+int main()
+{
+	List<int> list1 = { 200, 201, 205, 208 };
+	std::cout << list1.GetCount() << "\n";
+	List<int>::iterator it = list1.begin();
+	++it;
+	++it;
+	++it;
+	list1.erase(it);
+	std::cout << list1.GetCount() << "\n";
+	for (List<int>::iterator it = list1.begin(); it != list1.end(); ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << "\n";
+
+	List<double> list2 = { 20.5, 2.01, 205.4, 208.3 };
+	for (List<double>::iterator it = list2.begin(); it != list2.end(); ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << "\n";
+
+	std::list<int> list3 = { 123, 23, 23, 454 };
+	for (std::list<int>::iterator it = list3.begin(); it != list3.end(); ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << "\n";
+
+	std::list<int>::iterator it1 =
+		std::find(list3.begin(), list3.end(), 23);
+	if (it1 != list3.end())
+	{
+		std::cout << "found " << *it1 << "\n";
+	}
+	std::cout << "count " << std::count(list3.begin(), list3.end(), 23);
+
+	return 0;
+}
