@@ -1,5 +1,5 @@
 #pragma once
-#include <iostream>
+#include<iostream>
 
 struct TreeNode
 {
@@ -7,8 +7,8 @@ struct TreeNode
 	TreeNode* Left = nullptr;
 	TreeNode* Right = nullptr;
 	TreeNode* Parent = nullptr;
-
-	TreeNode(int value) : Data(value)
+	TreeNode(int value) :
+		Data(value)
 	{
 	}
 };
@@ -16,9 +16,8 @@ struct TreeNode
 class BinaryTree
 {
 	TreeNode* m_root = nullptr;
-	
-public:
-	BinaryTree() = default;
+
+private:
 
 	void InsertRecursive(TreeNode* node, int value)
 	{
@@ -30,28 +29,48 @@ public:
 		{
 			if (node->Left == nullptr)
 			{
-				TreeNode* NewNode = new TreeNode(value);
-				node->Left = NewNode;
-				NewNode->Parent = node;
+				TreeNode* newNode = new TreeNode(value);
+				node->Left = newNode;
+				newNode->Parent = node;
 			}
 			else
 			{
 				InsertRecursive(node->Left, value);
 			}
+
 		}
-		else 
+		else
 		{
 			if (node->Right == nullptr)
 			{
-				TreeNode* NewNode = new TreeNode(value);
-				node->Right = NewNode;
-				NewNode->Parent = node;
+				TreeNode* newNode = new TreeNode(value);
+				node->Right = newNode;
+				newNode->Parent = node;
 			}
 			else
 			{
 				InsertRecursive(node->Right, value);
 			}
 		}
+	}
+	void PrintRecursive(TreeNode* node)
+	{
+		if (node == nullptr)
+		{
+			return;
+		}
+
+		PrintRecursive(node->Left);
+		std::cout << node->Data << " ";
+		PrintRecursive(node->Right);
+	}
+
+public:
+	BinaryTree() = default;
+
+	~BinaryTree()
+	{
+		Clear();
 	}
 
 	void Insert(int value)
@@ -66,37 +85,28 @@ public:
 		}
 	}
 
-	void PrintRecursive(TreeNode* node)
-	{
-		if (node == nullptr)
-		{
-			return;
-		}
-		PrintRecursive(node->Left);
-		std::cout << node->Data << " ";
-		PrintRecursive(node->Right);
-	}
-
 	void Print()
 	{
 		PrintRecursive(m_root);
 	}
 
-	TreeNode* Findrecursive(TreeNode* node, int value)
+	TreeNode* FindRecursive(TreeNode* node, int value)
 	{
 		if (node != nullptr)
 		{
+
 			if (node->Data == value)
 			{
 				return node;
 			}
 			if (node->Data > value)
 			{
-				return Findrecursive(node->Left, value);
+				return FindRecursive(node->Left, value);
+
 			}
 			else
 			{
-				return Findrecursive(node->Right, value);
+				return FindRecursive(node->Right, value);
 			}
 		}
 		else
@@ -107,7 +117,7 @@ public:
 
 	TreeNode* Find(int value)
 	{
-		return Findrecursive(m_root, value);
+		return FindRecursive(m_root, value);
 	}
 
 	void Erase(TreeNode* node)
@@ -117,7 +127,8 @@ public:
 			return;
 		}
 		TreeNode* forReplace = nullptr;
-		TreeNode* newParent = node->Parent;
+		// TreeNode* newParent = node->Parent;
+		bool nodeHasTwoChildren = false;
 		if (node->Left != nullptr && node->Right != nullptr)
 		{
 			forReplace = node->Right;
@@ -125,11 +136,13 @@ public:
 			{
 				forReplace = forReplace->Left;
 			}
-			forReplace->Data = std::move(node->Data);
+			node->Data = std::move(forReplace->Data);
 			node = forReplace;
 			forReplace = nullptr;
+			nodeHasTwoChildren = true;
 		}
 
+		TreeNode* newParent = node->Parent;
 		if (node->Left != nullptr)
 		{
 			forReplace = node->Left;
@@ -153,11 +166,41 @@ public:
 				newParent->Right = forReplace;
 			}
 		}
-		if (node = m_root)
+		if (!nodeHasTwoChildren && node == m_root)
 		{
-			
+			m_root = forReplace;
 		}
 		delete node;
 	}
-};
 
+	void Clear()
+	{
+		ClearRecursive(m_root);
+		m_root = nullptr;
+	}
+
+	void ClearRecursive(TreeNode* node)
+	{
+		if (node == nullptr)
+		{
+			return;
+		}
+		ClearRecursive(node->Left);
+		ClearRecursive(node->Right);
+		delete node;
+	}
+
+	int GetCount()
+	{
+		return GetCountRecursive(m_root);
+	}
+
+	int GetCountRecursive(TreeNode* node)
+	{
+		if (node == nullptr)
+		{
+			return 0;
+		}
+		return GetCountRecursive(node->Left) + GetCountRecursive(node->Right) + 1;
+	}
+};
