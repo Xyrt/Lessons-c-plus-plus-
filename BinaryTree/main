@@ -1,23 +1,23 @@
-#include "BinaryTree.h"
-#include <iostream>
-
 int main()
 {
-	BinaryTree tree;
-	tree.Insert(5);
-	tree.Insert(10);
-	tree.Insert(3);
-	tree.Insert(6);
-	tree.Insert(0);
-	tree.Print();
 
-	TreeNode* node = tree.Find(3);
-	tree.Erase(node);
+	BinaryTree Tree;
+	Tree.Insert(8);
+	Tree.Insert(5);
+	Tree.Insert(3);
+	Tree.Insert(10);
+	Tree.Insert(12);
+	Tree.Insert(0);
+
+	Tree.Print();
+
+	TreeNode* node = Tree.Find(8);
+
+	std::cout << Tree.GetCount() << std::endl;
+	Tree.Erase(node);
 	std::cout << "\n";
-	tree.Print();
 
-	if (node != nullptr)
-	{
-		std::cout << "Found! whooHooo\n";
-	}
+	Tree.Print();
+
+	return 0;
 }
