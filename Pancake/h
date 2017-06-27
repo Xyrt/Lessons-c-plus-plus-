@@ -1,0 +1,164 @@
+#pragma once
+#include <string>
+
+class IOrder
+{
+public:
+	virtual ~IOrder() = default;
+
+	virtual std::string GetName() = 0;
+	virtual double GetCost() = 0;
+
+private:
+	
+};
+
+class Pancake : public IOrder
+{
+public:
+	std::string GetName()
+	{
+		return "Pancake with butt";
+	}
+
+	double GetCost()
+	{
+		return 0.5;
+	}
+};
+
+class PancakeWithCheeseAndTomato : public IOrder
+{
+public:
+	std::string GetName()
+	{
+		return "Pancake with Cheese and tomato";
+	}
+
+	double GetCost()
+	{
+		return 1.5;
+	}
+};
+
+class PancakeWithBananaAndCherry : public IOrder
+{
+public:
+	std::string GetName()
+	{
+		return "Pankace with Banana and cherry";
+	}
+
+	double GetCost()
+	{
+		return 1.0;
+	}
+
+};
+
+class PankaceWithStrawberry : public IOrder
+{
+public:
+	std::string GetName()
+	{
+		return "Pankace with Strawberry";
+	}
+
+	double GetCost()
+	{
+		return 1.2;
+	}
+};
+
+class Supplements : public IOrder
+{
+private:
+	IOrder* m_decorate;
+	double m_cost;
+	std::string m_name;
+	int m_count = 0;
+
+public:
+	Supplements(IOrder* decorate, double cost, std::string name, int count) : m_decorate(decorate), m_cost(cost), m_name(name), m_count(count)
+	{
+	}
+
+	~Supplements()
+	{
+		delete m_decorate;
+	}
+
+	double GetCost()
+	{
+		return m_decorate->GetCost() + m_cost * m_count;
+	}
+	
+	std::string GetName()
+	{
+		std::string str = m_decorate->GetName() + " " + m_name;
+		if (m_count > 1)
+		{
+			str += "*" + std::to_string(m_count);
+		}
+		return str;
+		
+	}
+};
+
+class BaconSupp : public Supplements
+{
+public:
+	BaconSupp(IOrder* decorate, int count) : Supplements(decorate, 0.5, "Bacon", count)
+	{
+	}
+};
+
+class OnionSup : public Supplements
+{
+public:
+	OnionSup(IOrder* decorate, int count) : Supplements(decorate, 0.2, "Onion", count)
+	{
+	}
+};
+
+class JamSupp : public Supplements
+{
+public:
+	JamSupp(IOrder* decorate, int count) : Supplements(decorate, 0.5, "JamSupp", count)
+	{
+	}
+};
+
+class ChokolateSupp : public Supplements
+{
+public:
+	ChokolateSupp(IOrder* decorate, int count) : Supplements(decorate, 0.3, "Chokolate", count)
+	{
+	}
+};
+
+class Discount : public IOrder
+{
+private:
+	IOrder* m_decorate;
+public:
+	Discount(IOrder* order) :m_decorate(order)
+	{
+	}
+
+	double GetCost()
+	{
+		double cost = m_decorate->GetCost();
+		return cost >= 3 ? cost * 0.9 : cost;
+	}
+
+	std::string GetName()
+	{
+		std::string str = m_decorate->GetName();
+		if (m_decorate->GetCost() >= 3)
+		{
+			str += "(Discount: 10%)";
+		}
+		return str;
+	}
+};
