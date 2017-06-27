@@ -1,0 +1,49 @@
+#include "Pancake.h"
+#include <iostream>
+
+enum SupplementType
+{
+	Bacon,
+	Onion,
+	Chocolate,
+	Jam
+};
+
+void PrintCheck(IOrder* order)
+{
+	std::cout << "Your order:\n" << order->GetName() << "\n\n" << "Cost: " << order->GetCost() << "\n";
+}
+
+IOrder* AddSupp(IOrder* order, SupplementType type, int count)
+{
+	switch (type)
+	{
+	case Bacon:
+		return new BaconSupp(order, count);
+		break;
+	case Onion:
+		return new OnionSup(order, count);
+		break;
+	case Chocolate:
+		return new ChokolateSupp(order, count);
+		break;
+	case Jam:
+		return new JamSupp(order, count);
+		break;
+	default:
+		return order;
+		break;
+	}
+}
+
+int main()
+{
+	IOrder* order = new PancakeWithCheeseAndTomato;
+	order = AddSupp(order, Bacon, 2);
+	order = AddSupp(order, Onion, 1);
+
+	PrintCheck(order);
+	delete order;
+
+	return 0;
+}
