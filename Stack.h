@@ -1,5 +1,28 @@
 #pragma once
 
+class StackException
+{
+	size_t m_count;
+public:
+	StackException(size_t count) : m_count(count)
+	{
+	}
+
+	size_t GetCount()
+	{
+		return m_count;
+	}
+};
+
+class StackIsFullException : public StackException
+{
+public:
+	StackIsFullException(size_t count) :
+		StackException(count)
+	{
+	}
+};
+
 class Stack
 {
 private:
@@ -8,11 +31,11 @@ private:
 	size_t m_count;
 
 	void ReallocateMemory(int newCapacity);
+	void CheckIsEmpty();
 
 public:
 	Stack();
 	Stack(Stack const& stack);
-	Stack(Stack&& stack);
 	~Stack();
 
 	void Push(int element);
@@ -22,7 +45,6 @@ public:
 	void Clear();
 
 	Stack& operator=(Stack const& stack);
-	Stack& operator=(Stack&& stack);
 	Stack& operator<<(int element);
 	Stack& operator >> (int& element);
 };
