@@ -1,6 +1,15 @@
 #include "Stack.h"
-
 #include <iostream>
+
+void Stack::CheckIsEmpty()
+{
+	if (m_count <= 0)
+	{
+		//throw "Stack is empty";
+		//throw StackException(m_count);
+		throw std::string("Stack Exception");
+	}
+}
 
 void Stack::ReallocateMemory(int newCapacity)
 {
@@ -20,20 +29,13 @@ Stack::Stack() :
 
 Stack::Stack(Stack const& stack)
 {
-	m_capacity = stack.m_capacity;
-	m_count = stack.m_count;
-	m_elements = new int[m_capacity];
-	memcpy(m_elements, stack.m_elements, m_capacity);
-}
-
-Stack::Stack(Stack&& stack)
-{
-	m_capacity = stack.m_capacity;
-	m_count = stack.m_count;
-	m_elements = stack.m_elements;
-	stack.m_elements = nullptr;
-	stack.m_capacity = 0;
-	stack.m_count = 0;
+	if (this != &stack)
+	{
+		m_capacity = stack.m_capacity;
+		m_count = stack.m_count;
+		m_elements = new int[m_capacity];
+		memcpy(m_elements, stack.m_elements, m_capacity);
+	}
 }
 
 Stack::~Stack()
@@ -43,6 +45,10 @@ Stack::~Stack()
 
 void Stack::Push(int element)
 {
+	if (m_count == 5)
+	{
+		throw StackIsFullException(m_count);
+	}
 	if (m_count == m_capacity)
 	{
 		ReallocateMemory(m_capacity * 2);
@@ -53,7 +59,9 @@ void Stack::Push(int element)
 
 int Stack::Pop()
 {
+	CheckIsEmpty();
 	m_count--;
+	std::cout << "Pop is called" << std::endl;
 	if (m_count * 4 <= m_capacity && m_count >= 10)
 	{
 		ReallocateMemory(m_capacity / 2);
@@ -68,6 +76,7 @@ size_t Stack::GetQuantity()
 
 int Stack::Top()
 {
+	CheckIsEmpty();
 	return m_elements[m_count - 1];
 }
 
@@ -89,21 +98,6 @@ Stack& Stack::operator=(Stack const& stack)
 	return *this;
 }
 
-Stack& Stack::operator=(Stack&& stack)
-{
-	if (this != &stack)
-	{
-		m_capacity = stack.m_capacity;
-		m_count = stack.m_count;
-		delete[] m_elements;
-		m_elements = stack.m_elements;
-		stack.m_elements = nullptr;
-		stack.m_capacity = 0;
-		stack.m_count = 0;
-	}
-	return *this;
-}
-
 Stack& Stack::operator<<(int element)
 {
 	Push(element);
@@ -112,9 +106,6 @@ Stack& Stack::operator<<(int element)
 
 Stack& Stack::operator >> (int& element)
 {
-	if (m_count != 0)
-	{
-		element = Pop();
-	}
+	element = Pop();
 	return *this;
 }
